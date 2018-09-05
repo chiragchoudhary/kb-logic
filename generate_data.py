@@ -16,12 +16,7 @@ class Entity:
         self.type = type
 
 
-<<<<<<< HEAD
 def generate_data(entities, relations=None, dtype="symmetry", relation_prob=0.1, train_test_split=0.0):
-=======
-def generate_data(entities, relations=None, type="symmetry", relation_prob=0.1):
->>>>>>> refs/remotes/origin/master
-
     num_relations = len(relations)
     if relations is None or num_relations < 2:
         print("Number of relations specified < 2, exiting...")
@@ -130,25 +125,15 @@ def generate_data(entities, relations=None, type="symmetry", relation_prob=0.1):
     e1_id = relations[-1].entities[0].id
     e2_id = relations[-1].entities[1].id
 
-<<<<<<< HEAD
     #print "sample entity paths"
     #print entity_paths[:3]
     #print
-=======
-    print "sample entity paths"
-    print entity_paths[:3]
-    print
->>>>>>> refs/remotes/origin/master
     for path in entity_paths:
         if e1_id in path and e2_id in path:
             e1 = path[e1_id]
             e2 = path[e2_id]
             test_facts.add((e1, head_rel, e2))
-<<<<<<< HEAD
             if dtype == "implication":
-=======
-            if type == "implication":
->>>>>>> refs/remotes/origin/master
                 # add negative facts also
                 es1_s = entity_types.index(relations[-1].entities[0].type) * num_entities_per_type
                 es2_s = entity_types.index(relations[-1].entities[1].type) * num_entities_per_type
@@ -165,7 +150,6 @@ def generate_data(entities, relations=None, type="symmetry", relation_prob=0.1):
                     ie = random.choice(es2)
                 test_facts.add((e1, head_rel, ie))
 
-<<<<<<< HEAD
     training_facts = list(training_facts)
     test_facts = list(test_facts)
     print len(training_facts), len(test_facts)
@@ -177,14 +161,7 @@ def generate_data(entities, relations=None, type="symmetry", relation_prob=0.1):
 
 
 # fetch list of entities
-with open(os.path.join(os.getcwd(), "data", "fake-420", "entities.txt")) as f:
-=======
-    return list(training_facts), list(test_facts)
-
-
-# fetch list of entities
 with open(os.path.join(os.getcwd(), "data", "entities.txt")) as f:
->>>>>>> refs/remotes/origin/master
     entities = f.read().splitlines()
 
 a = Entity(id=1, type='a')
@@ -194,7 +171,6 @@ d = Entity(id=4, type='d')
 
 rel1 = Relation(id=1, entities=[a, b])
 rel2 = Relation(id=2, entities=[a, b])
-<<<<<<< HEAD
 rel3 = Relation(id=3, entities=[a, b])
 rel4 = Relation(id=4, entities=[a, d])
 
@@ -210,15 +186,12 @@ if diff_test_entities is True:
 print "Number of training facts: {}".format(len(training_facts))
 #training_file = os.path.join(os.getcwd(), "data", "fake-420", "train_{}.txt".format(len(training_facts)))
 training_file = os.path.join(os.getcwd(), "data", "fake-420", "train.txt")
-=======
 rel3 = Relation(id=3, entities=[a, c])
 rel4 = Relation(id=4, entities=[a, d])
 
 training_facts, test_facts = generate_data(entities[:20], [rel1, rel2], relation_prob=0.1, type="symmetry")
 # print "training facts"
 print "Number of training facts: {}".format(len(training_facts))
-training_file = os.path.join(os.getcwd(), "data", "train.txt")
->>>>>>> refs/remotes/origin/master
 random.shuffle(training_facts)
 with open(training_file, 'w+') as f:
     for e in training_facts:
@@ -228,7 +201,6 @@ f.close()
 # print "test facts"
 # print test_facts
 print "Number of test facts: {}".format(len(test_facts))
-<<<<<<< HEAD
 #test_file = os.path.join(os.getcwd(), "data", "fake-420", "test_{}.txt".format(len(training_facts)))
 test_file = os.path.join(os.getcwd(), "data", "fake-420", "test.txt")
 random.shuffle(test_facts)
@@ -237,13 +209,3 @@ with open(test_file, 'w+') as f:
         f.write("{}\n".format('\t'.join(e)))
 f.close()
 
-=======
-test_file = os.path.join(os.getcwd(), "data", "test.txt")
-random.shuffle(test_facts)
-with open(test_file, 'w+') as f:
-    for e in test_facts:
-        f.write("{}\n".format('\t'.join(e)))
-f.close()
-
-
->>>>>>> refs/remotes/origin/master
