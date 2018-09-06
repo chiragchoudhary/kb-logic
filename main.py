@@ -146,9 +146,12 @@ def main():
     params = [value.numel() for value in model.parameters()]
     print(params)
     print(np.sum(params))
-
+    
+    max_mrr = 0
+    count = 0
+    max_count = 3
     opt = torch.optim.Adam(model.parameters(), lr=Config.learning_rate, weight_decay=Config.L2)
-    for epoch in range(epochs):
+    for epoch in range(1, epochs+1):
         model.train()
         for i, str2var in enumerate(train_batcher):
             opt.zero_grad()
@@ -171,11 +174,17 @@ def main():
 
         model.eval()
         with torch.no_grad():
-            ranking_and_hits(model, dev_rank_batcher, vocab, 'dev_evaluation')
-            if epoch % 3 == 0:
-                if epoch > 0:
-                    ranking_and_hits(model, test_rank_batcher, vocab, 'test_evaluation')
-
-
+            # ranking_and_hits(model, dev_rank_batcher, vocab, 'dev_evaluation')
+            if epoch % 15 == 0:
+                mrr = ranking_and_hits(model, dev_rank_batcher, vocab, 'dev_evaluation')
+                if mrr <= max_mrr:
+                    count += 1
+                    if count > max_count:
+                        break
+                else:
+                    count = 0
+                    max_mrr = mrr
+    mrr_test = ranking_and_hits(model, test_rank_batcher, vocab, 'test_evaluation')
+  
 if __name__ == '__main__':
     main()

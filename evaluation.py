@@ -102,4 +102,5 @@ def ranking_and_hits(model, dev_rank_batcher, vocab, name):
     log.info('Mean reciprocal rank left: {0}', np.mean(1./np.array(ranks_left)))
     log.info('Mean reciprocal rank right: {0}', np.mean(1./np.array(ranks_right)))
     log.info('Mean reciprocal rank: {0}', np.mean(1./np.array(ranks)))
-
+    
+    return np.mean(1./np.array(ranks))) 

@@ -1,6 +1,7 @@
 import os
 import random
 import copy
+import argparse
 
 
 class Relation:
@@ -108,7 +109,7 @@ def generate_data(entities, relations=None, dtype="symmetry", relation_prob=0.1,
                             new_path[e2_id] = e2
                             entity_paths_tmp.append(new_path)
 
-            #if len(entity_paths_tmp) > 0:
+            # if len(entity_paths_tmp) > 0:
             entity_paths = copy.deepcopy(entity_paths_tmp)
             del entity_paths_tmp
 
@@ -125,9 +126,9 @@ def generate_data(entities, relations=None, dtype="symmetry", relation_prob=0.1,
     e1_id = relations[-1].entities[0].id
     e2_id = relations[-1].entities[1].id
 
-    #print "sample entity paths"
-    #print entity_paths[:3]
-    #print
+    # print "sample entity paths"
+    # print entity_paths[:3]
+    # print
     for path in entity_paths:
         if e1_id in path and e2_id in path:
             e1 = path[e1_id]
@@ -152,7 +153,7 @@ def generate_data(entities, relations=None, dtype="symmetry", relation_prob=0.1,
 
     training_facts = list(training_facts)
     test_facts = list(test_facts)
-    print len(training_facts), len(test_facts)
+    print (len(training_facts), len(test_facts))
     m = int((1 - train_test_split)*len(test_facts))
     training_facts.extend(test_facts[:m])
     test_facts = test_facts[m:]
@@ -161,7 +162,7 @@ def generate_data(entities, relations=None, dtype="symmetry", relation_prob=0.1,
 
 
 # fetch list of entities
-with open(os.path.join(os.getcwd(), "data", "entities.txt")) as f:
+with open(os.path.join(os.getcwd(), "data", "fake-420", "entities.txt")) as f:
     entities = f.read().splitlines()
 
 a = Entity(id=1, type='a')
@@ -174,24 +175,27 @@ rel2 = Relation(id=2, entities=[a, b])
 rel3 = Relation(id=3, entities=[a, b])
 rel4 = Relation(id=4, entities=[a, d])
 
-training_facts, test_facts = generate_data(entities[:200], [rel1, rel2, rel3], relation_prob=0.25, dtype="symmetry")
+parser = argparse.ArgumentParser()
+parser.add_argument('--N', help='number of entities per type', type=int)
+parser.add_argument('--relation_prob', help='probability of a relation between two entities', type=float)
+args = parser.parse_args()
+
+print args
+training_facts, test_facts = generate_data(entities[:2*args.N], [rel1, rel2, rel3], relation_prob=args.relation_prob,
+                                           dtype="symmetry")
 
 diff_test_entities = True
 
 if diff_test_entities is True:
-    training_facts2, test_facts = generate_data(entities[460:], [rel1, rel2, rel3], relation_prob=0.75,dtype="symemtry", train_test_split=1.0)
+    training_facts2, test_facts = generate_data(entities[460:], [rel1, rel2, rel3], relation_prob=1.0, dtype="symmetry"
+                                                , train_test_split=1.0)
     training_facts.extend(training_facts2)
 
 # print "training facts"
 print "Number of training facts: {}".format(len(training_facts))
-#training_file = os.path.join(os.getcwd(), "data", "fake-420", "train_{}.txt".format(len(training_facts)))
-training_file = os.path.join(os.getcwd(), "data", "fake-420", "train.txt")
-rel3 = Relation(id=3, entities=[a, c])
-rel4 = Relation(id=4, entities=[a, d])
 
-training_facts, test_facts = generate_data(entities[:20], [rel1, rel2], relation_prob=0.1, type="symmetry")
-# print "training facts"
-print "Number of training facts: {}".format(len(training_facts))
+# training_file = os.path.join(os.getcwd(), "data", "fake-420", "train_{}.txt".format(len(training_facts)))
+training_file = os.path.join(os.getcwd(), "data", "fake-420", "train.txt")
 random.shuffle(training_facts)
 with open(training_file, 'w+') as f:
     for e in training_facts:
@@ -200,12 +204,20 @@ f.close()
 # print
 # print "test facts"
 # print test_facts
-print "Number of test facts: {}".format(len(test_facts))
-#test_file = os.path.join(os.getcwd(), "data", "fake-420", "test_{}.txt".format(len(training_facts)))
-test_file = os.path.join(os.getcwd(), "data", "fake-420", "test.txt")
+m = min(len(test_facts), 500)
+print "Number of test facts: {}".format(m)
+# test_file = os.path.join(os.getcwd(), "data", "fake-420", "test_{}.txt".format(len(training_facts)))
 random.shuffle(test_facts)
+
+dev_file = os.path.join(os.getcwd(), "data", "fake-420", "dev.txt")
+with open(dev_file, 'w+') as f:
+    for e in test_facts[:m/2]:
+        f.write("{}\n".format('\t'.join(e)))
+f.close()
+
+test_file = os.path.join(os.getcwd(), "data", "fake-420", "test.txt")
 with open(test_file, 'w+') as f:
-    for e in test_facts[:500]:
+    for e in test_facts[m/2:m]:
         f.write("{}\n".format('\t'.join(e)))
 f.close()
 
