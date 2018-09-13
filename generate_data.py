@@ -172,7 +172,7 @@ d = Entity(id=4, type='d')
 
 rel1 = Relation(id=1, entities=[a, b])
 rel2 = Relation(id=2, entities=[a, b])
-rel3 = Relation(id=3, entities=[a, b])
+rel3 = Relation(id=3, entities=[a, c])
 rel4 = Relation(id=4, entities=[a, d])
 
 parser = argparse.ArgumentParser()
@@ -181,13 +181,13 @@ parser.add_argument('--relation_prob', help='probability of a relation between t
 args = parser.parse_args()
 
 print args
-training_facts, test_facts = generate_data(entities[:2*args.N], [rel1, rel2, rel3], relation_prob=args.relation_prob,
+training_facts, test_facts = generate_data(entities[:2*args.N], [rel1, rel2], relation_prob=args.relation_prob,
                                            dtype="symmetry")
 
 diff_test_entities = True
 
 if diff_test_entities is True:
-    training_facts2, test_facts = generate_data(entities[460:], [rel1, rel2, rel3], relation_prob=1.0, dtype="symmetry"
+    training_facts2, test_facts = generate_data(entities[-40:], [rel1, rel2], relation_prob=1.0, dtype="symmetry"
                                                 , train_test_split=1.0)
     training_facts.extend(training_facts2)
 
@@ -204,12 +204,12 @@ f.close()
 # print
 # print "test facts"
 # print test_facts
-m = min(len(test_facts), 500)
+m = len(test_facts)
 print "Number of test facts: {}".format(m)
 # test_file = os.path.join(os.getcwd(), "data", "fake-420", "test_{}.txt".format(len(training_facts)))
 random.shuffle(test_facts)
 
-dev_file = os.path.join(os.getcwd(), "data", "fake-420", "dev.txt")
+dev_file = os.path.join(os.getcwd(), "data", "fake-420", "valid.txt")
 with open(dev_file, 'w+') as f:
     for e in test_facts[:m/2]:
         f.write("{}\n".format('\t'.join(e)))
